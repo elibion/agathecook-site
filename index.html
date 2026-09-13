@@ -1292,14 +1292,20 @@
       btn.disabled = true;
       btn.textContent = 'Envoi…';
 
-      // copie silencieuse vers le Google Sheet : ne bloque jamais l'envoi principal,
-      // et une eventuelle erreur ici n'affiche rien a la personne qui remplit le formulaire
+      // copie silencieuse vers le Google Sheet : ne bloque jamais l'envoi principal.
+      // Erreurs visibles uniquement dans la console developpeur (F12), jamais affichees
+      // a la personne qui remplit le formulaire.
       if(SHEET_WEBHOOK_URL){
         fetch(SHEET_WEBHOOK_URL, {
           method: 'POST',
-          mode: 'no-cors',
           body: new FormData(form)
-        }).catch(function(){});
+        })
+        .then(function(r){
+          if(!r.ok) console.error('Google Sheet — reponse HTTP', r.status);
+        })
+        .catch(function(err){
+          console.error('Google Sheet — envoi echoue', err);
+        });
       }
 
       fetch(form.action, {
