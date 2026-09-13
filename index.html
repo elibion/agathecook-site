@@ -1231,6 +1231,7 @@
     var btnHTML = btn.innerHTML;
 
     var WA_NUMBER = '33668006463';
+    var SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyHf4DCbOZ44SLiYv9MCYhmrY66NIW2d9Kq1gM2SRj-zVt2yn_B1CukVi9xI9U1kvUSLg/exec';
 
     function val(name){
       var el = form.querySelector('[name="' + name + '"]');
@@ -1290,6 +1291,16 @@
       status.textContent = 'Envoi en cours…';
       btn.disabled = true;
       btn.textContent = 'Envoi…';
+
+      // copie silencieuse vers le Google Sheet : ne bloque jamais l'envoi principal,
+      // et une eventuelle erreur ici n'affiche rien a la personne qui remplit le formulaire
+      if(SHEET_WEBHOOK_URL){
+        fetch(SHEET_WEBHOOK_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: new FormData(form)
+        }).catch(function(){});
+      }
 
       fetch(form.action, {
         method: 'POST',
